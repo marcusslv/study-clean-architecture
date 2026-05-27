@@ -1,50 +1,85 @@
 # FC Clean Architecture — Estudo
 
-**Propósito:** projeto criado unicamente para estudo e prática de Clean Architecture.
+Projeto criado para estudo e prática de Clean Architecture em Node.js/TypeScript.
 
-**Descrição:**
-Este repositório implementa exemplos e casos de uso organizados segundo princípios de Clean Architecture (camadas de domínio, casos de uso, infraestrutura e apresentação). O objetivo é didático: ilustrar como estruturar código, separar responsabilidades e escrever testes em uma aplicação Node.js/TypeScript.
+## Objetivo
 
-**Estrutura principal:**
-- `src/`: código-fonte
-  - `domain/`: entidades, value objects, casos de uso e regras de negócio
-  - `infrastructure/`: integração com frameworks, adaptadores e implementações de repositório
-  - `usecase/`: casos de uso (aplicação)
-  - `integration` / `__tests__`: testes de integração / e2e (quando existentes)
+O repositório mostra, de forma didática, como separar domínio, casos de uso e infraestrutura em uma aplicação com Express, Sequelize e Jest. A ideia é servir como referência de estrutura, não como aplicação de produção.
 
-**Tecnologias:**
+## Estrutura principal
+
+- `src/domain/`: entidades, value objects, serviços e interfaces de repositório.
+- `src/usecase/`: casos de uso da aplicação e seus DTOs.
+- `src/infrastructure/`: adaptadores para Express, Sequelize, presenters e repositórios concretos.
+- `src/infrastructure/api/__tests__/`: testes e2e da API.
+
+## Tecnologias
+
 - TypeScript
 - Node.js
-- Jest (testes)
+- Express
+- Sequelize / sequelize-typescript
+- Jest
 
-**Como usar (rápido):**
-1. Instale dependências:
+## Scripts
+
+Os scripts disponíveis em `package.json` são:
+
+- `npm test`: executa a verificação de TypeScript e a suíte de testes.
+- `npm run tsc`: roda apenas o compilador TypeScript.
+- `npm run dev`: inicia a aplicação com `nodemon`.
+
+## Como executar
+
+1. Instale as dependências:
 
 ```
 npm install
 ```
 
-2. Executar testes:
+2. Execute os testes:
 
 ```
 npm test
 ```
 
-3. Rodar a aplicação (se aplicável):
+3. Suba a aplicação em modo de desenvolvimento:
 
 ```
-npm run start
+npm run dev
 ```
 
-Observação: scripts no `package.json` podem variar; ajuste conforme necessário.
+## Rotas da API
 
-**O que procurar neste repositório (para estudo):**
-- Separação clara entre entidades de domínio (`src/domain`) e adaptadores/infrastructure.
-- Casos de uso implementados em `src/usecase` com DTOs e testes unitários.
-- Uso de fábricas e testes de unidade para entidades e serviços.
+- `POST /customer`
+- `GET /customer`
+- `POST /product`
+- `GET /product`
 
-**Contribuição:**
-Este repositório é destinado a estudo pessoal. Sinta-se à vontade para abrir issues ou pull requests com melhorias didáticas.
+As rotas estão montadas em `src/infrastructure/api/express.ts`.
 
-**Licença:**
-Uso pessoal / educativo. Consulte o autor para qualquer uso comercial.
+## Observação importante sobre Sequelize
+
+O erro `ModelNotInitializedError: Model not initialized: Member "create" cannot be called. "ProductModel" needs to be added to a Sequelize instance` ocorre quando o `ProductModel` é usado antes de ser registrado em uma instância do Sequelize.
+
+Neste projeto, a inicialização é feita em `src/infrastructure/api/express.ts`, onde os modelos são adicionados com `sequelize.addModels([CustomerModel, ProductModel])` e depois sincronizados com `sequelize.sync()`.
+
+Se você criar outro ponto de entrada, teste ou script que use `ProductRepository` diretamente, lembre de:
+
+1. criar a instância de `Sequelize`;
+2. registrar `ProductModel` com `addModels`;
+3. executar `sync()` antes de chamar `ProductModel.create`, `findOne`, `findAll` ou `update`.
+
+## Para estudo
+
+- Compare as entidades de domínio em `src/domain` com as implementações de infraestrutura em `src/infrastructure`.
+- Observe como os casos de uso recebem repositórios por injeção de dependência.
+- Veja como os testes de integração e e2e inicializam o banco em memória antes de executar as rotas.
+
+## Contribuição
+
+Este repositório é destinado a estudo pessoal. Melhorias didáticas são bem-vindas.
+
+## Licença
+
+Uso pessoal e educativo. Consulte o autor antes de qualquer uso comercial.
