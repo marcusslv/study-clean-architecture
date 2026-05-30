@@ -1,5 +1,5 @@
 import { toXML } from "jstoxml";
-import { OutputListProductDto } from "../../../usecase/Product/list/list.product.dto";
+import { OutputListProductDto } from "../../../usecase/product/list/list.product.dto";
 
 
 export default class ProductPresenter {
